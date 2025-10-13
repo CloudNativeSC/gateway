@@ -1,20 +1,23 @@
 server:
-  port: 8082
+  port: ${CONTAINER_PORT:8082} # 로컬에서 실행 시 8082, 도커에서 실행 시 8080
 
 spring:
+  config:
+    import: optional:file:./.env[.properties]
+
   cloud:
     gateway:
       routes:
         - id: auth-service
-          uri: http://localhost:8080
+          uri: http://${AUTH_HOST:localhost}:${CONTAINER_PORT:8080} # 로컬에서 실행 시 localhost:8080, 도커에서 실행 시 auth:8080
           predicates:
             - Path=/api/auth/**
         - id: user-service
-          uri: http://localhost:8081
+          uri: http://${USER_HOST:localhost}:${CONTAINER_PORT:8081} # 로컬에서 실행 시 localhost:8081, 도커에서 실행 시 user:8080
           predicates:
             - Path=/api/user/**
 
 jwt:
-  secret: mySuperSecretKey12345 # 테스트 용
-  expiration: 3600000        # 1시간(ms)
-  refresh-expiration: 86400000 # 1일(ms)
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
