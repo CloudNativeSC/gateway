@@ -9,13 +9,24 @@ spring:
     gateway:
       routes:
         - id: auth-service
-          uri: http://${AUTH_HOST:localhost}:${CONTAINER_PORT:8080} # 로컬에서 실행 시 localhost:8080, 도커에서 실행 시 auth:8080
+          uri: http://${AUTH_HOST:localhost}:${CONTAINER_PORT:8080}
           predicates:
             - Path=/api/auth/**
         - id: user-service
-          uri: http://${USER_HOST:localhost}:${CONTAINER_PORT:8081} # 로컬에서 실행 시 localhost:8081, 도커에서 실행 시 user:8080
+          uri: http://${USER_HOST:localhost}:${CONTAINER_PORT:8081}
           predicates:
-            - Path=/api/user/**
+            - Path=/api/users/**
+
+      # ⚙️ 전역 타임아웃 설정 (routes와 같은 레벨)
+      metadata:
+        response-timeout: 5000
+        connect-timeout: 5000
+
+      # 🧩 기본 필터 설정
+      default-filters:
+        - PreserveHostHeader
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+
 
 jwt:
   secret: ${JWT_SECRET}
