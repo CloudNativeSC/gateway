@@ -1,5 +1,7 @@
-package com.cluvy.gateway.util;
+package com.cluvy.gateway.filter;
 
+import com.cluvy.gateway.exception.JwtAuthenticationException;
+import com.cluvy.gateway.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -7,7 +9,6 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -36,6 +37,9 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         String method = String.valueOf(request.getMethod());
         String authorizationHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
+        if (request.getMethod() == HttpMethod.OPTIONS) {
+            return chain.filter(exchange);
+        }
 
         logger.info("Client Request: {} {}", path, method);
 
@@ -47,16 +51,15 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
         if (token == null) {
             logger.error("No token found: {}", authorizationHeader);
-            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-            return exchange.getResponse().setComplete();
+            return Mono.error(new JwtAuthenticationException("토큰이 없습니다."));
         }
 
         if (!jwtUtil.validateToken(token)) {
             logger.error("Invalid JWT token: {}", token);
-            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-            return exchange.getResponse().setComplete();
+            return Mono.error(new JwtAuthenticationException("유효하지 않은 토큰입니다."));
         }
-        
+
+
 //        토큰으로 userId를 알아내고 헤더에 붙이는 과정        
 //        String userId = jwtUtil.getUsernameFromToken(token);
 //        exchange = exchange.mutate()
@@ -78,6 +81,6 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     @Override
     public int getOrder() {
         // 필터 실행 순서 (낮을수록 먼저 실행)
-        return -1;
+        return 0;
     }
 }
