@@ -1,0 +1,13 @@
+# IDE 파일 제외
+.idea/
+*.iml
+
+# Git 파일 제외
+.git/
+.gitignore
+
+# 로그 파일 제외
+*.log
+
+# 환경 변수 파일 제외 (docker-compose에서 주입)
+src/main/resources/.env
