@@ -1,5 +1,6 @@
 package com.cluvy.gateway.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -10,10 +11,13 @@ import org.springframework.web.server.WebFilter;
 @Configuration
 public class CorsConfig {
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://localhost:3000"); // 허용할 Origin
+        config.addAllowedOrigin(frontendUrl); // 허용할 Origin
         config.addAllowedMethod("*"); // 모든 HTTP 메서드 허용 (GET, POST 등)
         config.addAllowedHeader("*"); // 모든 헤더 허용
         config.setAllowCredentials(true); // 쿠키를 포함한 인증 허용
