@@ -16,6 +16,14 @@ spring:
           uri: http://${USER_HOST:localhost}:${CONTAINER_PORT:8081}
           predicates:
             - Path=/api/users/**
+        - id: appointment-service
+          uri: http://${APPOINTMENT_HOST:localhost}:${CONTAINER_PORT:8083}
+          predicates:
+            - Path=/api/appointment/**
+        - id: task-service
+          uri: http://${TASK_HOST:localhost}:${CONTAINER_PORT:8084}
+          predicates:
+            - Path=/api/task/**
 
       # ⚙️ 전역 타임아웃 설정 (routes와 같은 레벨)
       metadata:
