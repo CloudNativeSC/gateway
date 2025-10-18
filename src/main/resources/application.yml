@@ -1,5 +1,5 @@
 server:
-  port: ${CONTAINER_PORT:8082} # 로컬에서 실행 시 8082, 도커에서 실행 시 8080
+  port: ${CONTAINER_PORT:8082}
 
 spring:
   config:
@@ -7,40 +7,55 @@ spring:
 
   cloud:
     gateway:
-      routes:
-        - id: auth-service
-          uri: http://${AUTH_HOST:localhost}:${CONTAINER_PORT:8080}
-          predicates:
-            - Path=/api/auth/**
-        - id: user-service
-          uri: http://${USER_HOST:localhost}:${CONTAINER_PORT:8081}
-          predicates:
-            - Path=/api/users/**
-        - id: appointment-service
-          uri: http://${APPOINTMENT_HOST:localhost}:${CONTAINER_PORT:8083}
-          predicates:
-            - Path=/api/appointment/**
-        - id: task-service
-          uri: http://${TASK_HOST:localhost}:${CONTAINER_PORT:8084}
-          predicates:
-            - Path=/api/task/**
+      server:
+        webflux:
+          routes:
+            - id: auth-service
+              uri: http://${AUTH_HOST:localhost}:${CONTAINER_PORT:8080}
+              predicates:
+                - Path=/api/auth/**
+            - id: user-service
+              uri: http://${USER_HOST:localhost}:${CONTAINER_PORT:8081}
+              predicates:
+                - Path=/api/users/**
+            - id: appointment-service
+              uri: http://${APPOINTMENT_HOST:localhost}:${CONTAINER_PORT:8083}
+              predicates:
+                - Path=/api/appointments/**
+            - id: task-service
+              uri: http://${TASK_HOST:localhost}:${CONTAINER_PORT:8084}
+              predicates:
+                - Path=/api/tasks/**
+                - Path=/api/task-tags/**
+                - Path=/api/task-templates/**
+                - Path=/api/work-sessions/**
+                - Path=/api/categories/**
+                - Path=/api/micro-habits/**
+                - Path=/api/reflections/
 
-      # ⚙️ 전역 타임아웃 설정 (routes와 같은 레벨)
-      metadata:
-        response-timeout: 5000
-        connect-timeout: 5000
+          # 전역 타임아웃 설정
+          metadata:
+            response-timeout: 5000
+            connect-timeout: 5000
 
-      # 🧩 기본 필터 설정
-      default-filters:
-        - PreserveHostHeader
-        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+          # 기본 필터 설정
+          default-filters:
+            - PreserveHostHeader
+            - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
 
+          # 전역 CORS 설정
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins: "${FRONTEND_URL:http://localhost:3000}"
+                allowedMethods: "*"
+                allowedHeaders: "*"
+                allowCredentials: true
 
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION}
-
 
 frontend:
   url: ${FRONTEND_URL:http://localhost:3000}
