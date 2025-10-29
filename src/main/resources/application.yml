@@ -23,7 +23,7 @@ spring:
               predicates:
                 - Path=/api/appointments/**
             - id: task-service
-              uri: http://${TASK_HOST:localhost}:${TASK_PORT:8084}
+              uri: http://${TASK_HOST:localhost}:${CONTAINER_PORT:8084}
               predicates:
                 - Path=/api/tasks/**,/api/task-tags/**,/api/task-templates/**,/api/work-sessions/**,/api/categories/**,/api/micro-habits/**,/api/reflections/**
 
