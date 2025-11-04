@@ -25,7 +25,7 @@ spring:
             - id: task-service
               uri: http://${TASK_HOST:localhost}:${CONTAINER_PORT:8084}
               predicates:
-                - Path=/api/tasks/**,/api/task-tags/**,/api/task-templates/**,/api/work-sessions/**,/api/categories/**,/api/micro-habits/**,/api/reflections/**
+                - Path=/api/tasks/**,/api/task-tags/**,/api/task-templates/**,/api/work-sessions/**,/api/categories/**,/api/micro-habits/**,/api/reflections/**,/swagger-ui/**,/v3/api-docs/**
 
           # 전역 타임아웃 설정
           metadata:
@@ -53,3 +53,9 @@ jwt:
 
 frontend:
   url: ${FRONTEND_URL:http://localhost:3000}
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
+    org.springframework.web.reactive.DispatcherHandler: DEBUG
